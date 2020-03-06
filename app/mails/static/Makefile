@@ -9,7 +9,7 @@ help:
 	@echo "or \"make watch\""
 
 css: sass/style.sass
-	sass --sourcemap=none sass/style.sass style.css
+	sass --no-source-map sass/style.sass style.css
 
 watch: sass/style.sass
-	sass --sourcemap=none --watch sass/style.sass:style.css
+	sass --no-source-map --watch sass/style.sass:style.css
