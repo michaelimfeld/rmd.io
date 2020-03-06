@@ -2,25 +2,35 @@ version: "2"
 services:
   postgres:
     image: postgres:9.6
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_DB=maildelay
       - POSTGRES_USER=rmdio
       - POSTGRES_PASSWORD=rmdio
-  phppgadmin:
-    image: zhajor/docker-phppgadmin
+  rmdio:
+    build: .
     depends_on:
       - postgres
-    links:
-      - postgres
-    ports:
-        - "8080:80"
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-  mailcatcher:
-    image: schickling/mailcatcher
+      - DJANGO_DATABASE_HOST=postgres
+      - DJANGO_DATABASE_NAME=maildelay
+      - DJANGO_DATABASE_USER=rmdio
+      - DJANGO_DATABASE_PASSWORD=rmdio
+      - DJANGO_SECRET_KEY=dev
+      - EMAIL_HOST=smtp.example.com
+      - EMAIL_HOST_USER=rmdio@example.com
+      - EMAIL_HOST_PASSWORD=secret
+      - EMAIL_FROM_USER=rmdio@example.com
+
+  https-portal:
+    image: steveltn/https-portal:1
     ports:
-        - "1080:1080"
-        - "1025:1025"
+      - '80:80'
+      - '443:443'
+    links:
+      - rmdio
+    restart: always
+    environment:
+      STAGE: local
+      DOMAINS: 'localhost -> http://rmdio'
+      # STAGE: 'production' # Don't use production until staging works
+      # FORCE_RENEW: 'true'
